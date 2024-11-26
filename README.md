@@ -1,2 +1,2 @@
-# recipe-and-rating-analysis
-UCSD DSC80 Final Project
+# Does a recipe's level of difficulty affect user ratings?
+by Ada Mo
