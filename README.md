@@ -71,6 +71,8 @@ Our dataset `recipe_ratings_needed` is now ready for use with 234423 rows of rec
 
 
 Here is a sneak peek of the dataset
+
+
 |    | name                                 |    hours | tags                                                                                                                                                                                                                        |   n_steps | steps                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |   n_ingredients |   easy_tag |   easy_hour |   rating |   avg_rating |
 |---:|:-------------------------------------|---------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------:|-----------:|------------:|---------:|-------------:|
 |  0 | 1 brownies in the world    best ever | 0.666667 | ['60-minutes-or-less', 'time-to-make', 'course', 'main-ingredient', 'preparation', 'for-large-groups', 'desserts', 'lunch', 'snacks', 'cookies-and-brownies', 'chocolate', 'bar-cookies', 'brownies', 'number-of-servings'] |        10 | ['heat the oven to 350f and arrange the rack in the middle', 'line an 8-by-8-inch glass baking dish with aluminum foil', 'combine chocolate and butter in a medium saucepan and cook over medium-low heat , stirring frequently , until evenly melted', 'remove from heat and let cool to room temperature', 'combine eggs , sugar , cocoa powder , vanilla extract , espresso , and salt in a large bowl and briefly stir until just evenly incorporated', 'add cooled chocolate and mix until uniform in color', 'add flour and stir until just incorporated', 'transfer batter to the prepared baking dish', 'bake until a tester inserted in the center of the brownies comes out clean , about 25 to 30 minutes', 'remove from the oven and cool completely before cutting']                                                  |               9 |          0 |           1 |        4 |            4 |
@@ -84,6 +86,7 @@ Here is a sneak peek of the dataset
 ### Univariate Analysis
 
 Let's explore the distribution of hours used in each recipe. This graph tells us that only very few recipes take over 500 hours to make. This isn't very informative about our distribution.
+
 <iframe
   src="assets/hours.html"
   width="800"
@@ -102,8 +105,9 @@ Let's zoom in. We can now see that our distribution is skewed right with a major
 
 
 Now, let's explore the distribution of the number of ingredients used in each recipe. Below, we can see an almost-normal distribution but slightly skewed right. The mean number of ingredients across all recipes is approximately 9.21.
+
 <iframe
-  src="assets/n-ingredients.html"
+  src="assets/n_ingredients.html"
   width="800"
   height="600"
   frameborder="0"
@@ -121,10 +125,13 @@ Here is a scatter plot showing the relationship between the number of steps in a
 ### Interesting Aggregates
 
 From the 2 grouped tables below, we can see that the recipes with an easy tag (`'easy_hour' == 1` or `'easy_tag' == 1`) tend to have a higher rating while requiring less steps and less ingredients
+
+
 |   easy_hour |   rating |   n_steps |   n_ingredients |
 |------------:|---------:|----------:|----------------:|
 |           0 |  4.65803 |  12.7812  |        10.4809  |
 |           1 |  4.68662 |   9.13779 |         8.62274 |
+
 
 |   easy_tag |   rating |   n_steps |   n_ingredients |
 |-----------:|---------:|----------:|----------------:|
@@ -135,6 +142,7 @@ Combining the 2 tables above, we can see more interesting patterns.
 - Recipes that are marked easy (`'easy_tag' == 1`) and can be quickly made (`'easy_hours' == 1`) have the highest average ratings. 
 - Recipes that are falsely marked as easy (`'easy_tag' == 1`) but take over 1 hour to make (`'easy_hours' == 0`) have the lowest average ratings.
 - Recipes that are marked as hard (`'easy_tag' == 0`) but can be quickly made (`'easy_hours' == 1`) have a higher average rating than recipes marked as hard (`'easy_tag' == 0`) and take a long time to make (`'easy_hour' == 0`).
+
 
 |    |   easy_tag |   easy_hour |   rating |   n_steps |   n_ingredients |    hours |
 |---:|-----------:|------------:|---------:|----------:|----------------:|---------:|
