@@ -5,6 +5,7 @@ by Ada Mo
 Cooking is a part of many people's daily lives but some dishes are easier to make while others are more difficult. Often times, the difficulty of a dish is associated with the time and effort put into the making of the dish, meaning a dish is more difficult to make when more time, ingredients, and skills are required. I am curious **how the level of difficulty can affect one's liking of the dish**. To investigate in the relationship, I will be analyzing from 2 datasets containing recipes and ratings since 2008 by food.com. ==include source==
 
 The first dataset, `recipe`, contains 83782 rows of unique recipes and 12 columns listed below:
+
 | Columns | Description |
 | ----------- | ----------- |
 | `'name'` | Recipe name |
@@ -22,6 +23,7 @@ The first dataset, `recipe`, contains 83782 rows of unique recipes and 12 column
 
 
 The second dataset, `interactions`, contains 731927 rows of unique user reviews and 5 columns listed below:
+
 | Columns | Description |
 | ----------- | ----------- |
 | `'user_id'` | User ID |
@@ -55,6 +57,7 @@ To make use of the `recipe` and `interactions` datasets to answer our question, 
 > - There is a recipe requiring 0 minutes to make but in the `'steps'` column, `['grind the almonds into a fine powder using a coffee , nut , or spice grinder']` suggests the recipe will take longer than 0 minutes to make.
 
 Our dataset `recipe_ratings_needed` is now ready for use with 234423 rows of recipe reviews and 10 columns.
+
 | Columns | Description |
 | ----------- | ----------- |
 | `'name'` | Recipe name |
@@ -130,8 +133,9 @@ From the 2 grouped tables below, we can see that the recipes with an easy tag (`
 |   easy_hour |   rating |   n_steps |   n_ingredients |
 |------------:|---------:|----------:|----------------:|
 |           0 |  4.65803 |  12.7812  |        10.4809  |
-|           1 |  4.68662 |   9.13779 |         8.62274 |
+|           1 |  4.68662 |   9.13779 |         8.62274 |  
 
+  
 
 |   easy_tag |   rating |   n_steps |   n_ingredients |
 |-----------:|---------:|----------:|----------------:|
