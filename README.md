@@ -2,7 +2,7 @@
 by Ada Mo
 
 ## Introduction
-Cooking is a part of many people's daily lives but some dishes are easier to make while others are more difficult. Often times, the difficulty of a dish is associated with the time and effort put into the making of the dish, meaning a dish is more difficult to make when more time, ingredients, and skills are required. I am curious **how the level of difficulty can affect one's rating of the dish**. To investigate in the relationship, I will be analyzing from 2 datasets containing recipes and ratings since 2008 by food.com. ==include source==
+Cooking is a part of many people's daily lives but some dishes are easier to make while others are more difficult. Often times, the difficulty of a dish is associated with the time and effort put into the making of the dish, meaning a dish is more difficult to make when more time, ingredients, and skills are required. I am curious **how the level of difficulty can affect one's rating of the dish**. To investigate in the relationship, I will be analyzing from 2 datasets containing recipes and ratings since 2008 by [food.com](https://www.food.com).
 
 The first dataset, `recipe`, contains 83782 rows of unique recipes and 12 columns listed below:
 
@@ -53,11 +53,11 @@ To make use of the `recipe` and `interactions` datasets to answer our question, 
 > - `'id'` is redundant with `'recipe_id'` so we will drop `'id'`.
 > - time is now stored in `'hours'` so we will drop `'minutes'`.
 8. Sort through each column and remove outliers.
-> - There is a recipe with a oddly high time requirement to make the dish. It turns out the name of the recipe is `'how to preserve a husband'`, and includes steps on how to preserve a husband 💀. This obviously isn't a food dish so we will remove it from our dataset.
+> - There is a recipe with a oddly high time requirement to make the dish. It turns out the name of the recipe is *'how to preserve a husband'*, and includes steps on how to preserve a husband 💀. This obviously isn't a food dish so we will remove it from our dataset.
 > - There is also another recipe whose `'name'` is `np.nan` and `'rating'` is `np.nan` even before step 2. This is quite odd since all other `rating` without values used `0` as a placeholder. Therefore, to prevent any future bias/confusion, we will remove this unnamed recipe from our dataset as well.
 > - There is a recipe requiring 0 minutes to make but in the `'steps'` column, `['grind the almonds into a fine powder using a coffee , nut , or spice grinder']` suggests the recipe will take longer than 0 minutes to make.
 9. Convert dates into `datetime` objects and extract the year.
-> Converting strings of dates into `datetime` objects will allow us to perform calculations on the dates.
+> Converting strings of dates into `datetime` objects will allow us to extract meaning and perform calculations on the dates (if needed later on).
 
 Our dataset `recipe_ratings_clean` is now ready for use with 234423 rows of recipe reviews and 19 columns.
 
@@ -75,11 +75,13 @@ Our dataset `recipe_ratings_clean` is now ready for use with 234423 rows of reci
 | `'n_ingredients'` | Number of ingredients |
 | `'user_id'` | User ID |
 | `'recipe_id'` | Recipe ID |
-| `'easy_tag'` | Binary difficulty label based on recipe tags |
-| `'easy_hour'` | Binary difficulty label based on recipe hours |
+| `'rating_date'`| Year of rating interaction |
 | `'rating'` | Rating given |
+| `'review'` | Review text |
 | `'avg_rating'` | Average rating of a recipe |
+| `'easy_tag'` | Binary difficulty label based on recipe tags |
 | `'hours'` | Hours needed to prepare recipe |
+| `'easy_hour'` | Binary difficulty label based on recipe hours |
 
 
 
@@ -199,7 +201,7 @@ To test the dependency of missingness of `'rating'` on `'minutes'`:
 
 In our permutation test, we obtained a **p-value of 0.232**. Since our p-value of 0.232 is greater than our significance level of 0.05, we **fail to reject the null**. This indicates that the missingness of the `'rating'` column is most likely not dependent on the `'minutes'` column, meaning it is `MCAR`.
 
-To test the dependency of missingness of `'rating'` on `'n_ingredients'`:
+Next, to test the dependency of missingness of `'rating'` on `'n_ingredients'`:
 > - H0: There *IS NO* difference between the distribution of the number of ingredients when `'rating'` is missing/not missing.
 > - H1: There *IS A* difference between the distribution of the number of ingredients when `'rating'` is missing/not missing.
 > - Test Statistic: absolute difference in mean number of ingredients between the missing group and the not missing group
@@ -243,12 +245,12 @@ Let's predict the average rating of a recipe and treat this as a regression prob
 > - Features: will be chosen from the information we have about recipes (will not choose from variables in interactions dataset)
 > - Metric: R²
 
-`'avg_rating'` is chosen as the response variable it is a good overall representation of the ratings of a recipe. Also, I want to build a prediction model that can allow the author of a recipe to estimate the average rating of their about-to-be-posted recipes so they can get a glimpse of how favorable their recipe would be, and whether anything needs to be modified, before posting it. For the purpose of the model, I will choose features only within the original `'recipe'` dataset since all the information `'recipe'` should be known at the time of prediction. Therefore, columns like `'rating'` and `'review` would not be included in our model since we do not know it yet. Since this is a regression model, the metric I will use to evaluate my model performance is R² because it will calculate the proportion of variance in the prediction variable explained by the model.
+`'avg_rating'` is chosen as the response variable because it is a good overall representation of the ratings of a recipe. Also, I want to build a prediction model that can allow the author of a recipe to estimate the average rating of their about-to-be-posted recipes so they can get a glimpse of how favorable their recipe would be, and whether anything needs to be modified, before posting it, in order to receive higher ratings. For the purpose of the model, I will choose features only within the original `'recipe'` dataset since all the information `'recipe'` should be known at the time of prediction. Therefore, columns like `'rating'` and `'review` would not be included in our model since this information would be unknown. Since this is a regression model, the metric I will use to evaluate my model performance is R² because it will calculate the proportion of variance in the prediction variable explained by the model.
 
 ## Baseline Model
 Let's create a simple baseline model with `'hours'`, `'n_steps'`, and `'n_ingredients'` as our features, and using a `DecisionTreeRegressor` as our estimator. Since all 3 features are quantitative, we do not need to perform any transformations and we can just leave them as is. 
 
-The R² score of the model on the test set is about **0.040418**. This means our model performs extremely poor in predicting our response variable `'avg_rating'` since our R² is very close to 0. This is likely because there is a lot of clustering in our data. Most recipes can be made under 1 hour, as seen in our univariate analysis above, which is normal since you wouldn't expect most dishes to take too long to prepare in reality. Also from the bivariate analysis, we can see that huge variance exists for the number of ingredients, which introduces uncertainty into our model during the training process.
+The **R² score** of the model on the test set is about **0.040418**. This means our model performs extremely poor in predicting our response variable `'avg_rating'` since our R² is very close to 0. This is likely because there is a lot of clustering in our data. Most recipes can be made under 1 hour, as seen in our univariate analysis above, which is normal since you wouldn't expect most dishes to take too long to prepare in reality. Also from the bivariate analysis, we can see that a high variance exists for the number of ingredients, which introduces uncertainty into our model during the training process.
 
 
 ## Final Model
@@ -256,24 +258,24 @@ In the final model, I included 5 more features, `'name'`, `'tags'`, `'steps'`, `
 
 `'name'`
 
-Certain foods may be more popular so ratings might be higher for those recipes (Ex: lots of people like chocolate so if 'chocolate' is an important word in a recipe's name, ratings may perhaps be higher). Therefore, I transformed the column using `Tdidfectorizer` to calculate the importance of each word in the recipe name.
+Certain foods may be more popular so ratings might be higher for those recipes (Ex: lots of people like chocolate so if 'chocolate' is an important word in a recipe's name, ratings may perhaps be higher). Therefore, I transformed the column using `TfidfVectorizer` to calculate the importance of each word in the recipe name.
 
 `'tags'` & `'steps'`
 
-These columns may contain keywords that may affect user liking of a recipe (Ex: there are certain steps in cooking that are harder so if a recipe contains harder steps, the rating of the recipe may be lower). Therefore, I performed bagging on the tags using `CountVectorizer`
+These columns may contain keywords that may affect user liking of a recipe (Ex: there are certain steps in cooking that are harder so if a recipe contains harder steps, the rating of the recipe may be lower). Therefore, I performed bagging on the tags using `CountVectorizer`.
 
 `'easy_tag'` & `'easy_hour'`
 
-These binary values can indicate whether a recipe is easy or not. As we saw earlier in our grouped tables, the mean rating of `'easy_tag' == 1` and `'easy_hour' == 1` were both higher than when the columns took on the value 0. We also ran a permutation test and found a p-value of 0.00 (shown above), indicating that it is highly likely that easy recipes recieve higher average ratings. Therefore, I used `OneHotEncoder` with the `drop = 'first'` parameter to transform the column and avoid multicollinearity.
+These binary values can indicate whether a recipe is easy or not. As we saw earlier in our grouped tables, the mean rating of `'easy_tag' == 1` and `'easy_hour' == 1` were both higher than when the columns took on the value 0. We also ran a permutation test and found a p-value of **0.00** (shown above), indicating that it is highly likely that easy recipes recieve higher average ratings. Therefore, I used `OneHotEncoder` with the `drop = 'first'` parameter to transform the columns and avoid multicollinearity.
 
-> After transforming our features, I performed a `GridSearchCV` to tune the hyperparameters. Because we are using a `DecisionTreeRegressor` as our prediction model, to prevent overfitting the training data and allow generalization, we will tune the `'max_depth'` and `'min_samples_split'` hyperparameters so we ensure that when the model is fitting to our training set, it will not continue splitting until all leaf nodes are pure. The best-performing hyperparameters were `'max_depth' = 10` and `'min_samples_split' = 11`. After fitting our tuned model on the training set, we now obtain a prediction score of **0.042934** on the test set (same one as baseline model). Although this is still poor performance, there is approximately a **0.002516 increase in R²**.
+> After transforming our features, I performed a `GridSearchCV` to tune the hyperparameters. Because we are using a `DecisionTreeRegressor` as our prediction model, to prevent overfitting the training data and allow generalization, we will tune the `'max_depth'` and `'min_samples_split'` hyperparameters so we ensure that when the model is fitting to our training set, it will not continue splitting until all leaf nodes are pure. This prevents our model from overfitting to our training set. The best-performing hyperparameters were `'max_depth' = 22` and `'min_samples_split' = 835`. After fitting our tuned model on the training set, we now obtain a **prediction score of 0.049802** on the test set (same test set as baseline model). Although this is still poor performance, there is approximately a **0.009384 increase in R²**.
 
 ## Fairness Assessment
-Let's test the fairness of our model. It turns out we have lots of old recipes and less of new recipes. Old recipes are defined as recipes posted between 2008 and up to 2012, while new recipes are all recipes poseted after 2012. I chose 2012 because every year before this threshold, over 10_000 recipes were posted each year. However, after 2012, fewer and fewer recipes are being posted, with the newest recipes in 2018. I want to see if our model can perform fairly on these 2 groups given the difference in sample sizes. To do so, we will evaluate the difference in R².
+Let's test the fairness of our model on easy and hard recipes. Easy recipes are defined as recipes with `'easy_tag' == 1`, while hard recipes are recipes with `'easy_tag' == 0`. I want to see if our model can predict fairly on these 2 groups and we will do so by evaluating the absolute difference in R².
 
-> - H0: Our model is fair. The R² for old and and new recipes are roughly the same, and any differences are due to random chance.
-> - H1: Our model is not fair. Its R² for old recipes is lower than its R² for new recipes.
-> - Test Statistic: Difference in R² (new - old)
+> - H0: Our model is fair. The R² for hard and easy recipes are roughly the same, and any differences are due to random chance.
+> - H1: Our model is not fair. Its R² for hard recipes is different from the R² of easy recipes.
+> - Test Statistic: Absolute difference in R² (|new - old|)
 > - Significance Level: 0.05
 
 <iframe
@@ -283,4 +285,4 @@ Let's test the fairness of our model. It turns out we have lots of old recipes a
   frameborder="0"
 ></iframe>
 
-We obtained a p-value of **0.000** which is less than the significance level at 0.05 so we would reject the null. It is highly unlikely that the difference in R² between the 2 groups was caused by chance. We can conclude that the model performs better for new recipes.
+We obtained a **p-value of 0.057** which is greater than the significance level at 0.05 so we would **fail to reject** the null. It is likely that the difference in R² between the 2 groups was caused by chance. We should conclude that the model performs fairly for both easy and hard recipes.
