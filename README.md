@@ -275,7 +275,7 @@ Let's test the fairness of our model on easy and hard recipes. Easy recipes are 
 
 > - H0: Our model is fair. The R² for hard and easy recipes are roughly the same, and any differences are due to random chance.
 > - H1: Our model is not fair. Its R² for hard recipes is different from the R² of easy recipes.
-> - Test Statistic: Absolute difference in R² (|new - old|)
+> - Test Statistic: Absolute difference in R²
 > - Significance Level: 0.05
 
 <iframe
